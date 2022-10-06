@@ -15,9 +15,13 @@ class _LoginWidgetState extends State<LoginWidget> {
   final passwordController = TextEditingController();
 
   Future logIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim())
+        .then((value) {
+      print("true");
+    });
   }
 
   void openSignUp() {

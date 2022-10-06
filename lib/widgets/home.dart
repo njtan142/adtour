@@ -1,3 +1,4 @@
+import 'package:android_app/widgets/map/mapbox_widget.dart';
 import 'package:android_app/widgets/newsfeed/cultural.dart';
 import 'package:android_app/widgets/newsfeed/festival.dart';
 import 'package:android_app/widgets/newsfeed/manmade.dart';
@@ -205,7 +206,13 @@ class _HomeWidgetState extends State<HomeWidget> {
         spaceBetweenChildren: 15,
         children: [
           SpeedDialChild(
-              child: const FaIcon(FontAwesomeIcons.map), label: 'Open Maps'),
+            child: const FaIcon(FontAwesomeIcons.map),
+            label: 'Open Maps',
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => MapsDemo()));
+            },
+          ),
           SpeedDialChild(
               child: const Icon(Icons.logout), label: 'Logout', onTap: signOut),
         ],
