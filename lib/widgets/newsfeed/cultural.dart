@@ -1,3 +1,5 @@
+import 'package:android_app/widgets/map/map_widget.dart';
+import 'package:android_app/widgets/newsfeed/destination_info_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +42,13 @@ class _CulturalNewsfeedWidgetState extends State<CulturalNewsfeedWidget> {
                     document.data()! as Map<String, dynamic>;
                 return Card(
                   child: ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DestinationInfoWidget(data: data)));
+                    },
                     title: Text(data['name']),
                     subtitle: Text(
                       data['description'],

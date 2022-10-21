@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'destination_info_widget.dart';
+
 class SpecialInterestNewsfeedWidget extends StatefulWidget {
   const SpecialInterestNewsfeedWidget({Key? key}) : super(key: key);
 
@@ -42,6 +44,13 @@ class _SpecialInterestNewsfeedWidgetState
                     document.data()! as Map<String, dynamic>;
                 return Card(
                   child: ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DestinationInfoWidget(data: data)));
+                    },
                     title: Text(data['name']),
                     subtitle: Text(
                       data['description'],

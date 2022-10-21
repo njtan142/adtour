@@ -1,5 +1,6 @@
 import 'package:android_app/widgets/home.dart';
 import 'package:android_app/widgets/login.dart';
+import 'package:android_app/widgets/restart.dart';
 import 'package:android_app/widgets/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,9 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const MyApp());
+  runApp(
+    RestartWidget(child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {

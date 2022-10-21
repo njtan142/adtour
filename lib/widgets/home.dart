@@ -1,8 +1,10 @@
+import 'package:android_app/widgets/map/map_widget.dart';
 import 'package:android_app/widgets/map/mapbox_widget.dart';
 import 'package:android_app/widgets/newsfeed/cultural.dart';
 import 'package:android_app/widgets/newsfeed/festival.dart';
 import 'package:android_app/widgets/newsfeed/manmade.dart';
 import 'package:android_app/widgets/newsfeed/special_interest.dart';
+import 'package:android_app/widgets/profile/profile_picture_view_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,7 @@ class HomeWidget extends StatefulWidget {
 
 class _HomeWidgetState extends State<HomeWidget> {
   final User user = FirebaseAuth.instance.currentUser!;
-  Map<String, dynamic>? userData;
+  Map<String, dynamic> userData = {'profile_url': null};
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         .get()
         .then((data) {
       setState(() {
-        userData = data.data();
+        userData = data.data()!;
       });
     });
   }
@@ -48,12 +50,33 @@ class _HomeWidgetState extends State<HomeWidget> {
         elevation: 0,
         toolbarHeight: 80,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        title: const Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: Icon(
-            Icons.account_circle,
-            color: Colors.blue,
-            size: 50,
+        title: GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePictureView(
+                      profileURL: userData['profile_url'] != null
+                          ? userData['profile_url']
+                          : "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"),
+                ));
+          },
+          child: CircleAvatar(
+            child: ClipOval(
+              child: userData!['profile_url'] == null
+                  ? Image.network(
+                      width: 100,
+                      height: 100,
+                      "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      userData!['profile_url'],
+                      fit: BoxFit.cover,
+                      width: 100,
+                      height: 100,
+                    ),
+            ),
           ),
         ),
         actions: [
@@ -205,11 +228,19 @@ class _HomeWidgetState extends State<HomeWidget> {
         spacing: 15,
         spaceBetweenChildren: 15,
         children: [
+          // SpeedDialChild(
+          //   child: const FaIcon(FontAwesomeIcons.map),
+          //   label: 'Open Maps',
+          //   onTap: () {
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => MapWidget()));
+          //   },
+          // ),
           SpeedDialChild(
             child: const FaIcon(FontAwesomeIcons.map),
-            label: 'Open Maps',
+            label: 'Open Maps Demo',
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                   context, MaterialPageRoute(builder: (context) => MapsDemo()));
             },
           ),

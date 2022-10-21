@@ -120,7 +120,6 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
                 Column(
                   children: <Widget>[
                     TextButton(
-                      child: const Text('Add source (asset image)'),
                       onPressed: sourceAdded
                           ? null
                           : () {
@@ -130,9 +129,9 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
                                 setState(() => sourceAdded = true);
                               });
                             },
+                      child: const Text('Add source (asset image)'),
                     ),
                     TextButton(
-                      child: const Text('Remove source (asset image)'),
                       onPressed: sourceAdded
                           ? () async {
                               await removeLayer(LAYER_ID);
@@ -141,18 +140,19 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
                               });
                             }
                           : null,
+                      child: const Text('Remove source (asset image)'),
                     ),
                     TextButton(
-                      child: const Text('Show layer'),
                       onPressed: sourceAdded
                           ? () => addLayer(LAYER_ID, SOURCE_ID)
                           : null,
+                      child: const Text('Show layer'),
                     ),
                     TextButton(
-                      child: const Text('Show layer below water'),
                       onPressed: sourceAdded
                           ? () => addLayerBelow(LAYER_ID, SOURCE_ID, 'water')
                           : null,
+                      child: const Text('Show layer below water'),
                     ),
                     TextButton(
                       child: const Text('Hide layer'),
