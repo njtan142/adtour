@@ -46,8 +46,12 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  DestinationInfoWidget(data: data)));
+                              builder: (context) => DestinationInfoWidget(
+                                    data: data,
+                                    id: document.id,
+                                    collectionReference: document.reference
+                                        .collection('comments'),
+                                  )));
                     },
                     title: Text(data['name']),
                     subtitle: Text(

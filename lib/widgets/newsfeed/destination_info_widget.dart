@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import 'package:android_app/widgets/newsfeed/classifier.dart';
+import 'package:android_app/widgets/newsfeed/try.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -9,48 +15,231 @@ import '../map/mapbox_widget.dart';
 
 class DestinationInfoWidget extends StatefulWidget {
   final Map<String, dynamic> data;
-  const DestinationInfoWidget({Key? key, required this.data}) : super(key: key);
+  final String id;
+  final CollectionReference collectionReference;
+  const DestinationInfoWidget(
+      {Key? key,
+      required this.data,
+      required this.id,
+      required this.collectionReference})
+      : super(key: key);
 
   @override
   State<DestinationInfoWidget> createState() => _DestinationInfoWidgetState();
 }
 
 class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
+  Classifier _classifier = Classifier();
+  late Stream<QuerySnapshot> _destinationsStream;
+  Widget comments = Center(
+    child: CircularProgressIndicator(),
+  );
+  Timer? timer;
+
+  @override
+  void initState() {
+    DateTime today = DateTime.now();
+    print("${today.year}-${today.month}-${today.day}");
+    FirebaseFirestore.instance
+        .collection('admin')
+        .doc('analytics')
+        .get()
+        .then((analyticsReference) {
+      Map<String, dynamic> data = {};
+      if (analyticsReference.data() != null) {
+        data = analyticsReference.data() as Map<String, dynamic>;
+      }
+      if (data['destination_views'] != null) {
+        data['destination_views'] += 1;
+      } else {
+        data['destination_views'] = 1;
+      }
+      FirebaseFirestore.instance
+          .collection('admin')
+          .doc('analytics')
+          .set(data, SetOptions(merge: true))
+          .then((value) {
+        FirebaseFirestore.instance
+            .collection('admin')
+            .doc('analytics')
+            .collection('destination_views')
+            .doc("${today.year}-${today.month}-${today.day}")
+            .get()
+            .then((analyticsReference) {
+          Map<String, dynamic> data = {};
+          if (analyticsReference.data() != null) {
+            data = analyticsReference.data() as Map<String, dynamic>;
+          }
+          if (data['destination_views'] != null) {
+            data['destination_views'] += 1;
+          } else {
+            data['destination_views'] = 1;
+          }
+          FirebaseFirestore.instance
+              .collection('admin')
+              .doc('analytics')
+              .collection('destination_views')
+              .doc("${today.year}-${today.month}-${today.day}")
+              .set(data, SetOptions(merge: true));
+        });
+      });
+    });
+    _destinationsStream = widget.collectionReference.snapshots();
+    timer = Timer.periodic(Duration(seconds: 1), (Timer t) => checkIfLoaded());
+    FirebaseAnalytics.instance
+        .logEvent(name: "Destination Views")
+        .then((value) {
+      print("logged");
+    });
+    FirebaseAnalytics.instance.logScreenView(screenName: "Destination Info");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Destination Info");
+    // TODO: implement initState
+    super.initState();
+  }
+
+  void checkIfLoaded() {
+    if (_classifier.loaded == 2) {
+      setState(() {
+        comments = getComments(context);
+      });
+      _classifier.loaded = 0;
+    }
+  }
+
+  Widget getComments(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _destinationsStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          return ListView(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(left: 20, top: 50, right: 20),
+            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              Map<String, dynamic> data =
+                  document.data()! as Map<String, dynamic>;
+              final prediction = _classifier.classify(data['comment']);
+
+              return Card(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  color: prediction[1] > prediction[0]
+                      ? Colors.lightGreen
+                      : Colors.redAccent,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        data['comment'],
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          );
+        }
+
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: SingleChildScrollView(
-          child: Center(
-              child: Padding(
-        padding:
-            const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 30),
-        child: Column(
-          children: [
-            Text(
-              widget.data["name"],
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              textAlign: TextAlign.center,
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          widget.data["image_url"] == null
+              ? FittedBox(
+                  child: Image.asset('assets/image_unavailable.jpg'),
+                  fit: BoxFit.fill,
+                )
+              : Image.network(
+                  widget.data["image_url"],
+                  fit: BoxFit.cover,
+                ),
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.data["name"],
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(color: Colors.red.shade300, width: 2),
+                          borderRadius: BorderRadius.circular(50)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          widget.collectionReference.path
+                              .split('/')[1]
+                              .toUpperCase(),
+                          style: TextStyle(color: Colors.red.shade300),
+                        ),
+                      )),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'What is it all about?',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 7,
+                ),
+                Text('Description',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  widget.data["description"],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text('Address',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 7,
+                ),
+                Text(widget.data['location'])
+              ],
             ),
-            widget.data["image_url"] == null
-                ? SizedBox(
-                    width: 300,
-                    height: 50,
-                  )
-                : Image.network(
-                    widget.data["image_url"],
-                    height: 350,
-                    fit: BoxFit.cover,
-                  ),
-            SizedBox(
-              height: 30,
-            ),
-            Text(
-              widget.data["description"],
-            ),
-          ],
-        ),
-      ))),
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          Text(
+            "Reviews",
+            style: TextStyle(fontSize: 30),
+          ),
+          Flexible(
+            child: comments,
+          )
+        ],
+      )),
       floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
         animatedIconTheme: IconThemeData(size: 22, color: Colors.white),

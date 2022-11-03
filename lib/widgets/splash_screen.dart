@@ -1,4 +1,5 @@
 import 'package:android_app/widgets/Home.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -14,6 +15,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
+    FirebaseAnalytics.instance.logAppOpen();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _navigateToHome());
   }

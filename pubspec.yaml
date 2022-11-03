@@ -45,6 +45,10 @@ dependencies:
   location: ^4.4.0
   firebase_storage: ^10.3.11
   image_picker: ^0.8.6
+  tflite_flutter: ^0.9.0
+  latlong: ^0.6.1
+  maps_toolkit: ^2.0.1
+  firebase_analytics: ^9.3.8
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +73,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/test/
     - assets/adtour_logo.svg
     - assets/cultural_background.jpg
     - assets/fill/cat_silhouette_pattern.png

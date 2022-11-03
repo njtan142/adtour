@@ -143,9 +143,8 @@ class _MapWidgetState extends State<MapWidget> {
         body: Center(
           child: Stack(alignment: AlignmentDirectional.bottomStart, children: [
             Padding(
-              padding: const EdgeInsets.only(top: 150),
+              padding: const EdgeInsets.only(top: 0),
               child: Container(
-                height: 500,
                 child: MapboxMap(
                   styleString: isLight
                       ? MapboxStyles.MAPBOX_STREETS

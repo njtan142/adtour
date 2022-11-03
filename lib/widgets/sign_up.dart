@@ -1,5 +1,6 @@
 import 'package:android_app/widgets/Login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,20 +21,36 @@ class _SignUpWidgetState extends State<SignUpWidget> {
   final phoneNumberController = TextEditingController();
 
   Future signUp() async {
-    await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim())
-        .then((user) {
-      final configurationData = <String, dynamic>{
-        'first_name': firstnameController.text.trim(),
-        'last_name': lastnameController.text.trim(),
-        'age': ageController.text.trim(),
-        'phone_number': phoneNumberController.text.trim(),
-      };
-      final usersRef = FirebaseFirestore.instance.collection('users');
-      usersRef.doc(user.user!.uid).set(configurationData);
-    });
+    if (emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        firstnameController.text.isEmpty ||
+        lastnameController.text.isEmpty ||
+        lastnameController.text.isEmpty ||
+        ageController.text.isEmpty ||
+        phoneNumberController.text.isEmpty) {
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: emailController.text.trim(),
+              password: passwordController.text.trim())
+          .then((user) {
+        final configurationData = <String, dynamic>{
+          'first_name': firstnameController.text.trim(),
+          'last_name': lastnameController.text.trim(),
+          'age': ageController.text.trim(),
+          'phone_number': phoneNumberController.text.trim(),
+        };
+        final usersRef = FirebaseFirestore.instance.collection('users');
+        usersRef.doc(user.user!.uid).set(configurationData);
+        FirebaseAnalytics.instance
+            .logSignUp(signUpMethod: "email and password");
+      });
+    } on FirebaseAuthException catch (e) {
+      showAlertDialog(context, e.toString());
+    }
   }
 
   void openLogin() {
@@ -133,6 +150,33 @@ class _SignUpWidgetState extends State<SignUpWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context, String message) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Login Error"),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

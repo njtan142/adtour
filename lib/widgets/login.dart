@@ -21,6 +21,11 @@ class _LoginWidgetState extends State<LoginWidget> {
             password: passwordController.text.trim())
         .then((value) {
       print("true");
+    }).catchError((onError) {
+      if (onError.toString().contains('user-not-found')) {
+        showAlertDialog(context,
+            "You have not created an account with this gmail or may have been deleted");
+      }
     });
   }
 
@@ -94,6 +99,33 @@ class _LoginWidgetState extends State<LoginWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context, String message) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Login Error"),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

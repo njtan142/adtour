@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(primaryColor: const Color.fromRGBO(33, 118, 198, 1)),
       home: const SplashScreen(),
+      initialRoute: "/home",
     );
   }
 }
