@@ -187,16 +187,6 @@ class _MapWidgetState extends State<MapWidget> {
                     ),
                   ],
                 )),
-            Positioned(
-              child: Card(
-                child: Container(
-                  width: 270,
-                  height: 200,
-                ),
-              ),
-              bottom: 0,
-              left: 0,
-            )
           ]),
         ));
   }

@@ -9,7 +9,6 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import '../map/map_widget.dart';
 import '../map/mapbox_widget.dart';
 
@@ -106,6 +105,103 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
     }
   }
 
+  Widget _buildComment(
+      BuildContext context, String uid, Map<String, dynamic> data) {
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get()
+          .asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final prediction = _classifier.classify(data['comment']);
+          Map<String, dynamic> userData = snapshot.data!.data()!;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40)),
+              child: Container(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: userData['profile_url'] == null
+                              ? CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/image_unavailable.jpg'))
+                              : CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(userData['profile_url'])),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          userData['first_name'],
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Text(
+                          (data['uploaded'] as Timestamp)
+                              .toDate()
+                              .toString()
+                              .split(" ")[0],
+                          style: TextStyle(fontSize: 12, color: Colors.black26),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '"' + data['comment'] + '"',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          width: 75,
+                          child: Text(
+                            prediction[1] > prediction[0]
+                                ? "Positive"
+                                : "Negative",
+                            style: TextStyle(
+                                color: prediction[1] > prediction[0]
+                                    ? Colors.green
+                                    : Colors.red),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
   Widget getComments(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: _destinationsStream,
@@ -119,24 +215,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
               final prediction = _classifier.classify(data['comment']);
-
-              return Card(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  color: prediction[1] > prediction[0]
-                      ? Colors.lightGreen
-                      : Colors.redAccent,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        data['comment'],
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              return _buildComment(context, data['user_id'], data);
             }).toList(),
           );
         }
@@ -156,10 +235,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           widget.data["image_url"] == null
-              ? FittedBox(
-                  child: Image.asset('assets/image_unavailable.jpg'),
-                  fit: BoxFit.fill,
-                )
+              ? Image.asset('assets/image_unavailable.jpg')
               : Image.network(
                   widget.data["image_url"],
                   fit: BoxFit.cover,

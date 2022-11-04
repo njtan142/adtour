@@ -98,7 +98,7 @@ class _DestinationConfirmationWidgetState
                       height: 30,
                     ),
                     Text(
-                      "Your location is near {<Desination>}, do you want to check in?",
+                      "Your location is near ${widget.data['name']}, do you want to check in?",
                       style: TextStyle(fontSize: 18),
                     ),
                     Row(
@@ -146,6 +146,103 @@ class _DestinationConfirmationWidgetState
             child: child,
           ),
         );
+      },
+    );
+  }
+
+  Widget _buildComment(
+      BuildContext context, String uid, Map<String, dynamic> data) {
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get()
+          .asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final prediction = _classifier.classify(data['comment']);
+          Map<String, dynamic> userData = snapshot.data!.data()!;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40)),
+              child: Container(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: userData['profile_url'] == null
+                              ? CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/image_unavailable.jpg'))
+                              : CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(userData['profile_url'])),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          userData['first_name'],
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Text(
+                          (data['uploaded'] as Timestamp)
+                              .toDate()
+                              .toString()
+                              .split(" ")[0],
+                          style: TextStyle(fontSize: 12, color: Colors.black26),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '"' + data['comment'] + '"',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          width: 75,
+                          child: Text(
+                            prediction[1] > prediction[0]
+                                ? "Positive"
+                                : "Negative",
+                            style: TextStyle(
+                                color: prediction[1] > prediction[0]
+                                    ? Colors.green
+                                    : Colors.red),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else {
+          return Container();
+        }
       },
     );
   }
@@ -233,23 +330,7 @@ class _DestinationConfirmationWidgetState
                   document.data()! as Map<String, dynamic>;
               final prediction = _classifier.classify(data['comment']);
 
-              return Card(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  color: prediction[1] > prediction[0]
-                      ? Colors.lightGreen
-                      : Colors.redAccent,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        data['comment'],
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              return _buildComment(context, data['user_id'], data);
             }).toList(),
           );
         }
@@ -264,50 +345,95 @@ class _DestinationConfirmationWidgetState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: SizedBox.expand(
         child: Stack(
           children: [
             SingleChildScrollView(
-                child: Padding(
-              padding: const EdgeInsets.only(
-                  top: 30, left: 20, right: 20, bottom: 30),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.data["name"],
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-                    textAlign: TextAlign.center,
+                child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                widget.data["image_url"] == null
+                    ? Image.asset('assets/image_unavailable.jpg')
+                    : Image.network(
+                        widget.data["image_url"],
+                        fit: BoxFit.cover,
+                      ),
+                SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.data["name"],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.red.shade300, width: 2),
+                                borderRadius: BorderRadius.circular(50)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                widget.collectionReference.path
+                                    .split('/')[1]
+                                    .toUpperCase(),
+                                style: TextStyle(color: Colors.red.shade300),
+                              ),
+                            )),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'What is it all about?',
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 7,
+                      ),
+                      Text('Description',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        widget.data["description"],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text('Address',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(
+                        height: 7,
+                      ),
+                      Text(widget.data['location'])
+                    ],
                   ),
-                  widget.data["image_url"] == null
-                      ? SizedBox(
-                          width: 300,
-                          height: 50,
-                        )
-                      : Image.network(
-                          widget.data["image_url"],
-                          height: 350,
-                          fit: BoxFit.cover,
-                        ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    widget.data["description"],
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Text(
-                    "Reviews",
-                    style: TextStyle(fontSize: 30),
-                  ),
-                  Flexible(
-                    child: comments,
-                  )
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  "Reviews",
+                  style: TextStyle(fontSize: 30),
+                ),
+                Flexible(
+                  child: comments,
+                )
+              ],
             )),
             Positioned(
               bottom: 0,
@@ -327,8 +453,17 @@ class _DestinationConfirmationWidgetState
                         ]
                       : <Widget>[
                           Expanded(
-                              child: TextField(
-                            controller: commentController,
+                              child: Container(
+                            padding: EdgeInsets.only(bottom: 10),
+                            color: Colors.white,
+                            child: TextField(
+                              controller: commentController,
+                              decoration: InputDecoration(
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                              ),
+                            ),
                           )),
                           ElevatedButton(
                               onPressed: () {
@@ -419,6 +554,8 @@ class _DestinationConfirmationWidgetState
   }
 
   void logFeedback() {
+    DateTime today = DateTime.now();
+
     final prediction = _classifier.classify(commentController.text);
 
     String result = prediction[1] > prediction[0] ? 'positive' : 'negative';
@@ -462,6 +599,30 @@ class _DestinationConfirmationWidgetState
       FirebaseFirestore.instance
           .collection('admin')
           .doc('analytics')
+          .set(data, SetOptions(merge: true));
+    });
+
+    FirebaseFirestore.instance
+        .collection('admin')
+        .doc('analytics')
+        .collection(result)
+        .doc("${today.year}-${today.month}")
+        .get()
+        .then((analyticsReference) {
+      Map<String, dynamic> data = {};
+      if (analyticsReference.data() != null) {
+        data = analyticsReference.data() as Map<String, dynamic>;
+      }
+      if (data[result] != null) {
+        data[result] += 1;
+      } else {
+        data[result] = 1;
+      }
+      FirebaseFirestore.instance
+          .collection('admin')
+          .doc('analytics')
+          .collection(result)
+          .doc("${today.year}-${today.month}")
           .set(data, SetOptions(merge: true));
     });
   }

@@ -1,4 +1,3 @@
-import 'package:android_app/widgets/map/map_widget.dart';
 import 'package:android_app/widgets/newsfeed/destination_info_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +19,12 @@ class _CulturalNewsfeedWidgetState extends State<CulturalNewsfeedWidget> {
   final TextEditingController searchController = TextEditingController();
   List<QueryDocumentSnapshot<Object?>> destinations = [];
   List<QueryDocumentSnapshot<Object?>>? searchList = null;
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {

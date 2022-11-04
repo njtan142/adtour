@@ -47,9 +47,11 @@ class _HomeWidgetState extends State<HomeWidget> {
     // Get data from docs and convert map to List
     final culturalDesinations = querySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      setState(() {
-        destinationInfos.add(doc);
-      });
+      if (mounted) {
+        setState(() {
+          destinationInfos.add(doc);
+        });
+      }
       return LatLng(
           double.parse(data['latitude']), double.parse(data['longitude']));
     }).toList();
@@ -64,9 +66,11 @@ class _HomeWidgetState extends State<HomeWidget> {
     // Get data from docs and convert map to List
     final manmadeDesinations = querySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      setState(() {
-        destinationInfos.add(doc);
-      });
+      if (mounted) {
+        setState(() {
+          destinationInfos.add(doc);
+        });
+      }
       return LatLng(
           double.parse(data['latitude']), double.parse(data['longitude']));
     }).toList();
@@ -81,9 +85,12 @@ class _HomeWidgetState extends State<HomeWidget> {
     // Get data from docs and convert map to List
     final specialinterestDesinations = querySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      setState(() {
-        destinationInfos.add(doc);
-      });
+      if (mounted) {
+        setState(() {
+          destinationInfos.add(doc);
+        });
+      }
+
       return LatLng(
           double.parse(data['latitude']), double.parse(data['longitude']));
     }).toList();
@@ -250,6 +257,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color.fromARGB(0, 255, 255, 255),
         elevation: 0,
         toolbarHeight: 80,

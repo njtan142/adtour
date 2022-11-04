@@ -19,6 +19,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
   final lastnameController = TextEditingController();
   final ageController = TextEditingController();
   final phoneNumberController = TextEditingController();
+  bool? isMale;
 
   Future signUp() async {
     if (emailController.text.isEmpty ||
@@ -27,7 +28,8 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         lastnameController.text.isEmpty ||
         lastnameController.text.isEmpty ||
         ageController.text.isEmpty ||
-        phoneNumberController.text.isEmpty) {
+        phoneNumberController.text.isEmpty ||
+        isMale == null) {
       return;
     }
 
@@ -42,6 +44,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
           'last_name': lastnameController.text.trim(),
           'age': ageController.text.trim(),
           'phone_number': phoneNumberController.text.trim(),
+          'gender': isMale! ? 'male' : 'female',
         };
         final usersRef = FirebaseFirestore.instance.collection('users');
         usersRef.doc(user.user!.uid).set(configurationData);
@@ -96,6 +99,40 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                     hintText: 'Phone Number', labelText: 'Phone Number'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Gender: ",
+                    style: TextStyle(
+                        fontSize: 16, color: Colors.black.withAlpha(150)),
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: isMale == null ? false : isMale,
+                          onChanged: (value) {
+                            setState(() {
+                              isMale = value;
+                            });
+                          }),
+                      Text('Male')
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: isMale == null ? false : !isMale!,
+                          onChanged: (value) {
+                            setState(() {
+                              isMale = !value!;
+                            });
+                          }),
+                      Text('Female')
+                    ],
+                  ),
+                ],
               ),
               TextField(
                 controller: emailController,

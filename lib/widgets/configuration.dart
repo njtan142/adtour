@@ -2,9 +2,11 @@ import 'package:android_app/widgets/splash_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ConfigurationWidget extends StatefulWidget {
   final String uid;
+  static String dropdownValue = '';
   const ConfigurationWidget({super.key, required this.uid});
 
   @override
@@ -13,6 +15,23 @@ class ConfigurationWidget extends StatefulWidget {
 
 class _ConfigurationWidgetState extends State<ConfigurationWidget> {
   bool isInternational = false;
+  final List<String> localSelection = [
+    'Cordova',
+    'Cebu',
+    'IloIlo',
+    'Mindanao',
+  ];
+
+  String? localSelectedValue;
+
+  final List<String> internationalSelection = [
+    'USA',
+    'Germany',
+    'Japan',
+    'Indonesia',
+  ];
+
+  String? internationalSelectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +84,42 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                       SizedBox(
                         width: 20,
                       ),
-                      LocationsSelection(
-                          locations: ['USA', 'Africa', 'Indonesia'])
+                      DropdownButton2(
+                        underline: Container(
+                          height: 2,
+                          color: Colors.white,
+                        ),
+                        dropdownDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: Colors.blue,
+                        ),
+                        hint: Text(
+                          '',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).hintColor,
+                          ),
+                        ),
+                        items: internationalSelection
+                            .map((item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
+                                ))
+                            .toList(),
+                        value: internationalSelectedValue,
+                        onChanged: (value) {
+                          setState(() {
+                            internationalSelectedValue = value as String;
+                          });
+                        },
+                        buttonHeight: 40,
+                        buttonWidth: 100,
+                        itemHeight: 40,
+                      ),
                     ],
                   ),
                 ],
@@ -107,8 +160,42 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                       SizedBox(
                         width: 20,
                       ),
-                      LocationsSelection(
-                          locations: ['Cordova', 'Cebu', 'Siargao'])
+                      DropdownButton2(
+                        underline: Container(
+                          height: 2,
+                          color: Colors.white,
+                        ),
+                        dropdownDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: Colors.blue,
+                        ),
+                        hint: Text(
+                          '',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).hintColor,
+                          ),
+                        ),
+                        items: localSelection
+                            .map((item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
+                                ))
+                            .toList(),
+                        value: localSelectedValue,
+                        onChanged: (value) {
+                          setState(() {
+                            localSelectedValue = value as String;
+                          });
+                        },
+                        buttonHeight: 40,
+                        buttonWidth: 100,
+                        itemHeight: 40,
+                      ),
                     ],
                   ),
                 ],
@@ -163,7 +250,10 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                                     .set({
                                   'tourist_type': !isInternational
                                       ? 'local'
-                                      : 'international'
+                                      : 'international',
+                                  'location': !isInternational
+                                      ? localSelectedValue
+                                      : internationalSelectedValue,
                                 }, SetOptions(merge: true)).then((value) {
                                   Navigator.pushReplacement(
                                       context,
@@ -193,7 +283,10 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
 
 class LocationsSelection extends StatefulWidget {
   final List<String> locations;
-  const LocationsSelection({super.key, required this.locations});
+  String dropdownValue = '';
+  LocationsSelection({super.key, required this.locations});
+
+  void reset() => _LocationsSelectionState().reset();
 
   @override
   State<LocationsSelection> createState() => _LocationsSelectionState();
@@ -202,12 +295,21 @@ class LocationsSelection extends StatefulWidget {
 class _LocationsSelectionState extends State<LocationsSelection> {
   String dropdownValue = "";
 
+  void reset() {
+    if (mounted) {
+      setState(() {
+        dropdownValue = '';
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     setState(() {
       dropdownValue = widget.locations.first;
     });
+    widget.dropdownValue = widget.locations.first;
     super.initState();
   }
 
@@ -229,6 +331,7 @@ class _LocationsSelectionState extends State<LocationsSelection> {
         setState(() {
           dropdownValue = value!;
         });
+        widget.dropdownValue = value!;
       },
       items: widget.locations.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
