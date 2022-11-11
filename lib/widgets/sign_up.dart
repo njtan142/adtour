@@ -34,6 +34,27 @@ class _SignUpWidgetState extends State<SignUpWidget> {
     }
 
     try {
+      FirebaseFirestore.instance
+          .collection('admin')
+          .doc('analytics')
+          .get()
+          .then((analyticsReference) {
+        Map<String, dynamic> data = {};
+        if (analyticsReference.data() != null) {
+          data = analyticsReference.data() as Map<String, dynamic>;
+        }
+        String gender = isMale! ? 'male' : 'female';
+        if (data[gender] != null) {
+          data[gender] += 1;
+        } else {
+          data[gender] = 1;
+        }
+        FirebaseFirestore.instance
+            .collection('admin')
+            .doc('analytics')
+            .set(data, SetOptions(merge: true));
+      });
+
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: emailController.text.trim(),
