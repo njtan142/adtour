@@ -267,7 +267,7 @@ class _DestinationConfirmationWidgetState
       transitionDuration: Duration(milliseconds: 100),
       pageBuilder: (_, __, ___) {
         return Center(
-          child: Container(
+          child: SizedBox(
             height: 200,
             width: 300,
             child: Card(
@@ -275,15 +275,15 @@ class _DestinationConfirmationWidgetState
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       "Comment Uploaded!",
                       style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
-                    Text(
+                    const Text(
                       "Comment has been submitted successfully",
                       style: TextStyle(fontSize: 18),
                     ),
@@ -297,7 +297,7 @@ class _DestinationConfirmationWidgetState
                                     builder: (context) =>
                                         const MyHomePage(title: 'Adtour')));
                           },
-                          child: new Text('Okay'),
+                          child: const Text('Okay'),
                         ),
                       ],
                     )
@@ -311,9 +311,9 @@ class _DestinationConfirmationWidgetState
       transitionBuilder: (_, anim, __, child) {
         Tween<Offset> tween;
         if (anim.status == AnimationStatus.reverse) {
-          tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
         } else {
-          tween = Tween(begin: Offset(1, 0), end: Offset.zero);
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
         }
 
         return SlideTransition(
@@ -333,15 +333,12 @@ class _DestinationConfirmationWidgetState
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           return ListView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             padding: const EdgeInsets.only(left: 20, top: 50, right: 20),
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
-              final prediction =
-                  _classifier.classify(formatText(data['comment']));
-
               return _buildComment(context, data['user_id'], data);
             }).toList(),
           );
@@ -370,7 +367,7 @@ class _DestinationConfirmationWidgetState
                         widget.data["image_url"],
                         fit: BoxFit.cover,
                       ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Padding(
@@ -380,7 +377,7 @@ class _DestinationConfirmationWidgetState
                     children: [
                       Text(
                         widget.data["name"],
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 24),
                       ),
                       Padding(
@@ -400,45 +397,45 @@ class _DestinationConfirmationWidgetState
                               ),
                             )),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Text(
+                      const Text(
                         'What is it all about?',
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 18,
                             fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 7,
                       ),
-                      Text('Description',
+                      const Text('Description',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                       Text(
                         widget.data["description"],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      Text('Address',
+                      const Text('Address',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
-                      SizedBox(
+                      const SizedBox(
                         height: 7,
                       ),
                       Text(widget.data['location'])
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 50,
                 ),
-                Text(
+                const Text(
                   "Reviews",
                   style: TextStyle(fontSize: 30),
                 ),
@@ -461,16 +458,16 @@ class _DestinationConfirmationWidgetState
                               onPressed: () {
                                 confirmLocation(context);
                               },
-                              child: Text("Write a review"))
+                              child: const Text("Write a review"))
                         ]
                       : <Widget>[
                           Expanded(
                               child: Container(
-                            padding: EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.only(bottom: 10),
                             color: Colors.white,
                             child: TextField(
                               controller: commentController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(color: Colors.blue),
                                 ),
@@ -479,80 +476,7 @@ class _DestinationConfirmationWidgetState
                           )),
                           ElevatedButton(
                               onPressed: () {
-                                FirebaseAnalytics.instance
-                                    .logEvent(name: "Feedback");
-                                DateTime today = DateTime.now();
-                                logFeedback();
-
-                                FirebaseFirestore.instance
-                                    .collection('admin')
-                                    .doc('analytics')
-                                    .get()
-                                    .then((analyticsReference) {
-                                  Map<String, dynamic> data = {};
-                                  if (analyticsReference.data() != null) {
-                                    data = analyticsReference.data()
-                                        as Map<String, dynamic>;
-                                  }
-                                  if (data['check_ins'] != null) {
-                                    data['check_ins'] += 1;
-                                  } else {
-                                    data['check_ins'] = 1;
-                                  }
-                                  FirebaseFirestore.instance
-                                      .collection('admin')
-                                      .doc('analytics')
-                                      .set(data, SetOptions(merge: true))
-                                      .then((value) {
-                                    FirebaseFirestore.instance
-                                        .collection('admin')
-                                        .doc('analytics')
-                                        .collection('check_ins')
-                                        .doc(
-                                            "${today.year}-${today.month}-${today.day}")
-                                        .get()
-                                        .then((analyticsReference) {
-                                      Map<String, dynamic> data = {};
-                                      if (analyticsReference.data() != null) {
-                                        data = analyticsReference.data()
-                                            as Map<String, dynamic>;
-                                      }
-                                      if (data['check_ins'] != null) {
-                                        data['check_ins'] += 1;
-                                      } else {
-                                        data['check_ins'] = 1;
-                                      }
-                                      FirebaseFirestore.instance
-                                          .collection('admin')
-                                          .doc('analytics')
-                                          .collection('check_ins')
-                                          .doc("${today.year}-${today.month}")
-                                          .set(data, SetOptions(merge: true))
-                                          .then((value) {
-                                        widget.collectionReference.add({
-                                          'comment': commentController.text,
-                                          'user_id': FirebaseAuth
-                                              .instance.currentUser!.uid,
-                                          'uploaded': Timestamp.now()
-                                        }).then((value) {
-                                          String id = FirebaseAuth
-                                              .instance.currentUser!.uid;
-                                          FirebaseFirestore.instance
-                                              .collection("users")
-                                              .doc(id)
-                                              .collection("check_ins")
-                                              .doc()
-                                              .set({
-                                            'path': value.path,
-                                          }, SetOptions(merge: true)).then(
-                                                  ((value) {
-                                            commentUploaded(context);
-                                          }));
-                                        });
-                                      });
-                                    });
-                                  });
-                                });
+                                uploadComment();
                               },
                               child: Text("Submit"))
                         ])
@@ -636,6 +560,109 @@ class _DestinationConfirmationWidgetState
           .collection(result)
           .doc("${today.year}-${today.month}")
           .set(data, SetOptions(merge: true));
+    });
+
+    locationAnalytics(prediction[1] > prediction[0] ? true : false);
+  }
+
+  void locationAnalytics(bool isPositive) {
+    DateTime today = DateTime.now();
+    String result = isPositive ? 'positive' : 'negative';
+
+    List<String> path = widget.collectionReference.path.split("/");
+    FirebaseFirestore.instance
+        .collection(path[0])
+        .doc(path[1])
+        .collection(path[2])
+        .doc(path[3])
+        .get()
+        .then((analyticsReference) {
+      Map<String, dynamic> data = {};
+      if (analyticsReference.data() != null) {
+        data = analyticsReference.data() as Map<String, dynamic>;
+      }
+      if (data[result] != null) {
+        data[result] += 1;
+      } else {
+        data[result] = 1;
+      }
+      data['latest_feedback'] = "${today.year}-${today.month}-${today.day}";
+      FirebaseFirestore.instance
+          .collection(path[0])
+          .doc(path[1])
+          .collection(path[2])
+          .doc(path[3])
+          .set(data, SetOptions(merge: true));
+    });
+  }
+
+  void uploadComment() {
+    FirebaseAnalytics.instance.logEvent(name: "Feedback");
+    DateTime today = DateTime.now();
+    logFeedback();
+
+    FirebaseFirestore.instance
+        .collection('admin')
+        .doc('analytics')
+        .get()
+        .then((analyticsReference) {
+      Map<String, dynamic> data = {};
+      if (analyticsReference.data() != null) {
+        data = analyticsReference.data() as Map<String, dynamic>;
+      }
+      if (data['check_ins'] != null) {
+        data['check_ins'] += 1;
+      } else {
+        data['check_ins'] = 1;
+      }
+      FirebaseFirestore.instance
+          .collection('admin')
+          .doc('analytics')
+          .set(data, SetOptions(merge: true))
+          .then((value) {
+        FirebaseFirestore.instance
+            .collection('admin')
+            .doc('analytics')
+            .collection('check_ins')
+            .doc("${today.year}-${today.month}-${today.day}")
+            .get()
+            .then((analyticsReference) {
+          Map<String, dynamic> data = {};
+          if (analyticsReference.data() != null) {
+            data = analyticsReference.data() as Map<String, dynamic>;
+          }
+          if (data['check_ins'] != null) {
+            data['check_ins'] += 1;
+          } else {
+            data['check_ins'] = 1;
+          }
+          FirebaseFirestore.instance
+              .collection('admin')
+              .doc('analytics')
+              .collection('check_ins')
+              .doc("${today.year}-${today.month}")
+              .set(data, SetOptions(merge: true))
+              .then((value) {
+            widget.collectionReference.add({
+              'comment': commentController.text,
+              'user_id': FirebaseAuth.instance.currentUser!.uid,
+              'uploaded': Timestamp.now()
+            }).then((value) {
+              String id = FirebaseAuth.instance.currentUser!.uid;
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(id)
+                  .collection("check_ins")
+                  .doc()
+                  .set({
+                'path': value.path,
+              }, SetOptions(merge: true)).then(((value) {
+                commentUploaded(context);
+              }));
+            });
+          });
+        });
+      });
     });
   }
 }
