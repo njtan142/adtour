@@ -1,3 +1,4 @@
+import 'package:android_app/custom_arts.dart';
 import 'package:android_app/widgets/newsfeed/destination_info_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -82,7 +83,7 @@ class _CulturalNewsfeedWidgetState extends State<CulturalNewsfeedWidget> {
           return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+              backgroundColor: bgColor,
               elevation: 0,
               toolbarHeight: 80,
               systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -141,7 +142,7 @@ class _CulturalNewsfeedWidgetState extends State<CulturalNewsfeedWidget> {
                     Navigator.pop(context);
                   },
                   icon: const FaIcon(FontAwesomeIcons.house),
-                  color: Colors.amber[500],
+                  color: accentColor,
                   iconSize: 19,
                 )
               ],
@@ -207,8 +208,8 @@ class _CulturalNewsfeedWidgetState extends State<CulturalNewsfeedWidget> {
                               child: FractionallySizedBox(
                                 widthFactor: 1,
                                 child: Container(
-                                    decoration: const BoxDecoration(
-                                        color: Color.fromARGB(255, 209, 22, 22),
+                                    decoration: BoxDecoration(
+                                        color: destinationCardTextBGColor,
                                         borderRadius: BorderRadius.only(
                                             bottomLeft: Radius.circular(10),
                                             bottomRight: Radius.circular(10))),
@@ -222,7 +223,7 @@ class _CulturalNewsfeedWidgetState extends State<CulturalNewsfeedWidget> {
                                         style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.white),
+                                            color: destinationCardTextColor),
                                         overflow: TextOverflow.clip,
                                       ),
                                     )),

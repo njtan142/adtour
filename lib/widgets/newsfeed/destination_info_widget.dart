@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:android_app/custom_arts.dart';
 import 'package:android_app/widgets/newsfeed/classifier.dart';
 import 'package:android_app/widgets/newsfeed/try.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -145,7 +146,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                         ),
                         Text(
                           userData['first_name'],
-                          style: TextStyle(color: Colors.blue),
+                          style: TextStyle(color: profileNameColor),
                         ),
                         SizedBox(
                           width: 30,
@@ -155,7 +156,8 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                               .toDate()
                               .toString()
                               .split(" ")[0],
-                          style: TextStyle(fontSize: 12, color: Colors.black26),
+                          style: TextStyle(
+                              fontSize: 12, color: commentTimestampColor),
                         ),
                       ],
                     ),
@@ -184,8 +186,8 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                                 : "Negative",
                             style: TextStyle(
                                 color: prediction[1] > prediction[0]
-                                    ? Colors.green
-                                    : Colors.red),
+                                    ? positiveFeedbackColor
+                                    : negativeFeedbackColor),
                           ),
                         )
                       ],
@@ -256,8 +258,8 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                       decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.red.shade300, width: 2),
+                          border: Border.all(
+                              color: categoryInfoTypeColor, width: 2),
                           borderRadius: BorderRadius.circular(50)),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -265,7 +267,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                           widget.collectionReference.path
                               .split('/')[1]
                               .toUpperCase(),
-                          style: TextStyle(color: Colors.red.shade300),
+                          style: TextStyle(color: categoryInfoTypeColor),
                         ),
                       )),
                 ),
@@ -275,7 +277,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                 Text(
                   'What is it all about?',
                   style: TextStyle(
-                      color: Colors.blue,
+                      color: whatIsThisAllAboutTextColor,
                       fontSize: 18,
                       fontWeight: FontWeight.bold),
                 ),
@@ -318,8 +320,9 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
       )),
       floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
-        animatedIconTheme: IconThemeData(size: 22, color: Colors.white),
-        backgroundColor: Colors.blue,
+        animatedIconTheme: IconThemeData(
+            size: 22, color: destinationInfoFloatingButtonIconColor),
+        backgroundColor: destinationInfoFloatingButtonBGColor,
         curve: Curves.bounceIn,
         spacing: 15,
         spaceBetweenChildren: 15,

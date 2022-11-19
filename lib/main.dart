@@ -5,6 +5,7 @@ import 'package:android_app/widgets/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'custom_arts.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primaryColor: const Color.fromRGBO(33, 118, 198, 1)),
+      theme: ThemeData(primaryColor: primaryColor),
       home: const SplashScreen(),
       initialRoute: "/home",
     );

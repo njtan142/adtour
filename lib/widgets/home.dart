@@ -19,6 +19,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:maps_toolkit/maps_toolkit.dart';
+import 'package:android_app/custom_arts.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({Key? key}) : super(key: key);
@@ -258,7 +259,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+        backgroundColor: bgColor,
         elevation: 0,
         toolbarHeight: 80,
         systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -294,7 +295,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           IconButton(
             onPressed: signOut,
             icon: const FaIcon(FontAwesomeIcons.arrowRightFromBracket),
-            color: Colors.amber[500],
+            color: accentColor,
             iconSize: 19,
           )
         ],
@@ -339,9 +340,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                           child: FractionallySizedBox(
                             widthFactor: 1,
                             child: Container(
-                                decoration: const BoxDecoration(
-                                    color: Color.fromARGB(200, 255, 255, 255),
-                                    borderRadius: BorderRadius.only(
+                                decoration: BoxDecoration(
+                                    color: categoryTextBGColor,
+                                    borderRadius: const BorderRadius.only(
                                         bottomLeft: Radius.circular(10),
                                         bottomRight: Radius.circular(10))),
                                 height: 30,
@@ -373,8 +374,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                           child: FractionallySizedBox(
                             widthFactor: 1,
                             child: Container(
-                                decoration: const BoxDecoration(
-                                    color: Color.fromARGB(200, 255, 255, 255),
+                                decoration: BoxDecoration(
+                                    color: categoryTextBGColor,
                                     borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(10),
                                         bottomRight: Radius.circular(10))),
@@ -407,8 +408,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                           child: FractionallySizedBox(
                             widthFactor: 1,
                             child: Container(
-                                decoration: const BoxDecoration(
-                                    color: Color.fromARGB(200, 255, 255, 255),
+                                decoration: BoxDecoration(
+                                    color: categoryTextBGColor,
                                     borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(10),
                                         bottomRight: Radius.circular(10))),
