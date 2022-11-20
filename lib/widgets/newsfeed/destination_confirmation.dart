@@ -596,12 +596,14 @@ class _DestinationConfirmationWidgetState
     });
   }
 
-  void uploadComment() {
+  void uploadComment() async {
     FirebaseAnalytics.instance.logEvent(name: "Feedback");
     DateTime today = DateTime.now();
-    logFeedback();
+    final prediction = _classifier.classify(formatText(commentController.text));
 
-    FirebaseFirestore.instance
+    String result = prediction[1] > prediction[0] ? 'positive' : 'negative';
+
+    await FirebaseFirestore.instance
         .collection('admin')
         .doc('analytics')
         .get()
@@ -646,7 +648,8 @@ class _DestinationConfirmationWidgetState
             widget.collectionReference.add({
               'comment': commentController.text,
               'user_id': FirebaseAuth.instance.currentUser!.uid,
-              'uploaded': Timestamp.now()
+              'uploaded': Timestamp.now(),
+              'sentiment': result,
             }).then((value) {
               String id = FirebaseAuth.instance.currentUser!.uid;
               FirebaseFirestore.instance
@@ -664,5 +667,7 @@ class _DestinationConfirmationWidgetState
         });
       });
     });
+
+    logFeedback();
   }
 }
