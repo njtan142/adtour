@@ -28,7 +28,7 @@ class CustomMarker extends StatefulWidget {
 }
 
 class CustomMarkerState extends State<CustomMarker> {
-  final Random _rnd = new Random();
+  final Random _rnd = Random();
 
   late MapboxMapController _mapController;
   List<Marker> _markers = [];
@@ -47,9 +47,7 @@ class CustomMarkerState extends State<CustomMarker> {
     });
   }
 
-  void _onStyleLoadedCallback() {
-    print('onStyleLoadedCallback');
-  }
+  void _onStyleLoadedCallback() {}
 
   void _onMapLongClickCallback(Point<double> point, LatLng coordinates) {
     _addMarker(point, coordinates);
@@ -82,7 +80,7 @@ class CustomMarkerState extends State<CustomMarker> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       body: Stack(children: [
         MapboxMap(
           accessToken: MapsDemo.ACCESS_TOKEN,
@@ -169,9 +167,6 @@ class CustomMarkerState extends State<CustomMarker> {
         results[batch]![1] += sw.elapsedMilliseconds;
         sw.reset();
       }
-
-      print(
-          'batch=$batch,primitive=${results[batch]![0] / trial}ms, batch=${results[batch]![1] / trial}ms');
     }
   }
 }

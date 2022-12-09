@@ -21,7 +21,7 @@ class _SpecialInterestNewsfeedWidgetState
   Map<String, dynamic> userData = {'profile_url': null};
   final TextEditingController searchController = TextEditingController();
   List<QueryDocumentSnapshot<Object?>> destinations = [];
-  List<QueryDocumentSnapshot<Object?>>? searchList = null;
+  List<QueryDocumentSnapshot<Object?>>? searchList;
 
   @override
   void dispose() {
@@ -50,8 +50,6 @@ class _SpecialInterestNewsfeedWidgetState
     setState(() {
       searchList = destinations;
     });
-    print(destinations);
-    print(searchList);
   }
 
   final Stream<QuerySnapshot> _destinationsStream = FirebaseFirestore.instance
@@ -66,7 +64,7 @@ class _SpecialInterestNewsfeedWidgetState
       stream: _destinationsStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return const Text('Something went wrong');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -118,7 +116,7 @@ class _SpecialInterestNewsfeedWidgetState
                 ),
               ),
               actions: [
-                Container(
+                SizedBox(
                   width: 150,
                   child: TextField(
                     textAlignVertical: TextAlignVertical.bottom,
@@ -135,7 +133,6 @@ class _SpecialInterestNewsfeedWidgetState
                       setState(() {
                         searchList = searched;
                       });
-                      print(searchList);
                     },
                   ),
                 ),
@@ -151,13 +148,13 @@ class _SpecialInterestNewsfeedWidgetState
             ),
             body: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: Row(
-                    children: [
+                    children: const [
                       Text(
                         "Explore",
                         style: TextStyle(fontSize: 35),
@@ -198,12 +195,12 @@ class _SpecialInterestNewsfeedWidgetState
                             child: Container(
                               alignment: Alignment.bottomCenter,
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                   image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: data['image_url'] == null
-                                          ? AssetImage(
+                                          ? const AssetImage(
                                                   'assets/image_unavailable.jpg')
                                               as ImageProvider
                                           : NetworkImage(data['image_url']))),
@@ -212,7 +209,7 @@ class _SpecialInterestNewsfeedWidgetState
                                 child: Container(
                                     decoration: BoxDecoration(
                                         color: destinationCardTextBGColor,
-                                        borderRadius: BorderRadius.only(
+                                        borderRadius: const BorderRadius.only(
                                             bottomLeft: Radius.circular(10),
                                             bottomRight: Radius.circular(10))),
                                     height: 75,

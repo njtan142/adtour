@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../Home.dart';
 
 class ProfilePictureEditWidget extends StatefulWidget {
   const ProfilePictureEditWidget({Key? key}) : super(key: key);
@@ -40,7 +39,7 @@ class _ProfilePictureEditWidgetState extends State<ProfilePictureEditWidget> {
 
   Future uploadProfilePicture() async {
     final id = FirebaseAuth.instance.currentUser!.uid;
-    final path = "Profiles/${id}";
+    final path = "Profiles/$id";
     final file = image;
     final ref = FirebaseStorage.instance.ref().child(path);
     ref.putFile(file!).then((p0) {
@@ -62,7 +61,7 @@ class _ProfilePictureEditWidgetState extends State<ProfilePictureEditWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Edit Profile")),
+      appBar: AppBar(title: const Text("Edit Profile")),
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -72,13 +71,15 @@ class _ProfilePictureEditWidgetState extends State<ProfilePictureEditWidget> {
                   image!,
                   height: 300,
                 )
-              : SizedBox(
+              : const SizedBox(
                   height: 300,
                 ),
-          SizedBox(height: 20),
-          ElevatedButton(onPressed: pickImage, child: Text("From Gallery")),
-          ElevatedButton(onPressed: pickCamera, child: Text("From Camera")),
-          SizedBox(
+          const SizedBox(height: 20),
+          ElevatedButton(
+              onPressed: pickImage, child: const Text("From Gallery")),
+          ElevatedButton(
+              onPressed: pickCamera, child: const Text("From Camera")),
+          const SizedBox(
             height: 50,
           ),
           image != null
@@ -89,7 +90,7 @@ class _ProfilePictureEditWidgetState extends State<ProfilePictureEditWidget> {
                       Expanded(
                           child: ElevatedButton(
                               onPressed: uploadProfilePicture,
-                              child: Text("Submit"))),
+                              child: const Text("Submit"))),
                     ],
                   ),
                 )

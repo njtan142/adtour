@@ -59,13 +59,13 @@ class LineBodyState extends State<LineBody> {
 
   _onLineTapped(Line line) async {
     await _updateSelectedLine(
-      LineOptions(lineColor: "#ff0000"),
+      const LineOptions(lineColor: "#ff0000"),
     );
     setState(() {
       _selectedLine = line;
     });
     await _updateSelectedLine(
-      LineOptions(lineColor: "#ffe100"),
+      const LineOptions(lineColor: "#ffe100"),
     );
   }
 
@@ -75,7 +75,7 @@ class LineBodyState extends State<LineBody> {
 
   void _add() {
     controller!.addLine(
-      LineOptions(
+      const LineOptions(
           geometry: [
             LatLng(-33.86711, 151.1947171),
             LatLng(-33.86711, 151.1947171),
@@ -145,7 +145,7 @@ class LineBodyState extends State<LineBody> {
   _onStyleLoadedCallback() async {
     addImageFromAsset("assetImage", _linePatternImage);
     await controller!.addLine(
-      LineOptions(
+      const LineOptions(
         geometry: [LatLng(37.4220, -122.0841), LatLng(37.4240, -122.0941)],
         lineColor: "#ff0000",
         lineWidth: 14.0,

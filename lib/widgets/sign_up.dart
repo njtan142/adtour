@@ -1,4 +1,3 @@
-import 'package:android_app/widgets/Login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -132,13 +131,13 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                   Row(
                     children: [
                       Checkbox(
-                          value: isMale == null ? false : isMale,
+                          value: isMale ?? false,
                           onChanged: (value) {
                             setState(() {
                               isMale = value;
                             });
                           }),
-                      Text('Male')
+                      const Text('Male')
                     ],
                   ),
                   Row(
@@ -150,7 +149,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
                               isMale = !value!;
                             });
                           }),
-                      Text('Female')
+                      const Text('Female')
                     ],
                   ),
                 ],
@@ -214,7 +213,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
   showAlertDialog(BuildContext context, String message) {
     // set up the button
     Widget okButton = TextButton(
-      child: Text("OK"),
+      child: const Text("OK"),
       onPressed: () {
         Navigator.pop(context);
       },
@@ -222,7 +221,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Login Error"),
+      title: const Text("Login Error"),
       content: Text(message),
       actions: [
         okButton,

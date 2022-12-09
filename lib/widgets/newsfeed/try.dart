@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'classifier.dart';
 
 class Sentiment extends StatefulWidget {
+  const Sentiment({super.key});
+
   @override
   SentimentState createState() => SentimentState();
 }
@@ -56,7 +58,6 @@ class SentimentState extends State<Sentiment> {
                     onPressed: () {
                       final text = _controller.text;
                       final prediction = _classifier.classify(text);
-                      print(prediction);
                       setState(() {
                         _children.add(Dismissible(
                           key: GlobalKey(),
@@ -74,7 +75,7 @@ class SentimentState extends State<Sentiment> {
                                     "Input: $text",
                                     style: const TextStyle(fontSize: 16),
                                   ),
-                                  Text("Output:"),
+                                  const Text("Output:"),
                                   Text("   Positive: ${prediction[1]}"),
                                   Text("   Negative: ${prediction[0]}"),
                                 ],

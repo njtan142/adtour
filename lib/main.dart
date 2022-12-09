@@ -12,7 +12,7 @@ Future main() async {
   await Firebase.initializeApp();
 
   runApp(
-    RestartWidget(child: const MyApp()),
+    const RestartWidget(child: MyApp()),
   );
 }
 
@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(primaryColor: primaryColor),
       home: const SplashScreen(),
-      initialRoute: "/home",
     );
   }
 }

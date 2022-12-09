@@ -2,16 +2,12 @@ import 'dart:async';
 
 import 'package:android_app/custom_arts.dart';
 import 'package:android_app/widgets/newsfeed/classifier.dart';
-import 'package:android_app/widgets/newsfeed/try.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../map/map_widget.dart';
-import '../map/mapbox_widget.dart';
 
 class DestinationInfoWidget extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -29,9 +25,9 @@ class DestinationInfoWidget extends StatefulWidget {
 }
 
 class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
-  Classifier _classifier = Classifier();
+  final Classifier _classifier = Classifier();
   late Stream<QuerySnapshot> _destinationsStream;
-  Widget comments = Center(
+  Widget comments = const Center(
     child: CircularProgressIndicator(),
   );
   Timer? timer;
@@ -39,7 +35,6 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
   @override
   void initState() {
     DateTime today = DateTime.now();
-    print("${today.year}-${today.month}-${today.day}");
     FirebaseFirestore.instance
         .collection('admin')
         .doc('analytics')
@@ -85,15 +80,13 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
       });
     });
     _destinationsStream = widget.collectionReference.snapshots();
-    timer = Timer.periodic(Duration(seconds: 1), (Timer t) => checkIfLoaded());
+    timer = Timer.periodic(
+        const Duration(seconds: 1), (Timer t) => checkIfLoaded());
     FirebaseAnalytics.instance
         .logEvent(name: "Destination Views")
-        .then((value) {
-      print("logged");
-    });
+        .then((value) {});
     FirebaseAnalytics.instance.logScreenView(screenName: "Destination Info");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Destination Info");
-    // TODO: implement initState
     super.initState();
   }
 
@@ -130,25 +123,25 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                   children: <Widget>[
                     Row(
                       children: [
-                        Container(
+                        SizedBox(
                           width: 30,
                           height: 30,
                           child: userData['profile_url'] == null
-                              ? CircleAvatar(
+                              ? const CircleAvatar(
                                   backgroundImage: AssetImage(
                                       'assets/image_unavailable.jpg'))
                               : CircleAvatar(
                                   backgroundImage:
                                       NetworkImage(userData['profile_url'])),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 15,
                         ),
                         Text(
                           userData['first_name'],
                           style: TextStyle(color: profileNameColor),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 30,
                         ),
                         Text(
@@ -161,7 +154,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
@@ -210,13 +203,12 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           return ListView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             padding: const EdgeInsets.only(left: 20, top: 50, right: 20),
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
-              final prediction = _classifier.classify(data['comment']);
               return _buildComment(context, data['user_id'], data);
             }).toList(),
           );
@@ -242,7 +234,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                   widget.data["image_url"],
                   fit: BoxFit.cover,
                 ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Padding(
@@ -252,7 +244,8 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
               children: [
                 Text(
                   widget.data["name"],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -271,7 +264,7 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                         ),
                       )),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
@@ -281,35 +274,35 @@ class _DestinationInfoWidgetState extends State<DestinationInfoWidget> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 7,
                 ),
-                Text('Description',
+                const Text('Description',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Text(
                   widget.data["description"],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                Text('Address',
+                const Text('Address',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(
+                const SizedBox(
                   height: 7,
                 ),
                 Text(widget.data['location'])
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
-          Text(
+          const Text(
             "Reviews",
             style: TextStyle(fontSize: 30),
           ),

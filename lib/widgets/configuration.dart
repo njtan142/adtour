@@ -61,11 +61,11 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                               isInternational = !isInternational;
                             });
                           }),
-                      Text(
+                      const Text(
                         'Are you an ',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      Text(
+                      const Text(
                         'International Tourist?',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -77,11 +77,11 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Select your country ',
                         style: TextStyle(color: Colors.white),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       DropdownButton2(
@@ -137,11 +137,11 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                               isInternational = !isInternational;
                             });
                           }),
-                      Text(
+                      const Text(
                         'Are you a ',
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                      Text(
+                      const Text(
                         'Local Tourist?',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -153,11 +153,11 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Select your country ',
                         style: TextStyle(color: Colors.white),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       DropdownButton2(
@@ -200,7 +200,7 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               Padding(
@@ -208,7 +208,7 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                 child: Row(
                   children: [
                     Expanded(
-                        child: Container(
+                        child: SizedBox(
                       height: 50,
                       child: ElevatedButton(
                           style: ButtonStyle(
@@ -259,12 +259,12 @@ class _ConfigurationWidgetState extends State<ConfigurationWidget> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              SplashScreen()));
+                                              const SplashScreen()));
                                 });
                               });
                             });
                           },
-                          child: Text(
+                          child: const Text(
                             "CONTINUE",
                             style: TextStyle(
                                 color: Color(0xFF4C9EEB), fontSize: 18),
@@ -305,7 +305,6 @@ class _LocationsSelectionState extends State<LocationsSelection> {
 
   @override
   void initState() {
-    // TODO: implement initState
     setState(() {
       dropdownValue = widget.locations.first;
     });

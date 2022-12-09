@@ -19,7 +19,7 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
   Map<String, dynamic> userData = {'profile_url': null};
   final TextEditingController searchController = TextEditingController();
   List<QueryDocumentSnapshot<Object?>> destinations = [];
-  List<QueryDocumentSnapshot<Object?>>? searchList = null;
+  List<QueryDocumentSnapshot<Object?>>? searchList;
 
   @override
   void dispose() {
@@ -48,8 +48,6 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
     setState(() {
       searchList = destinations;
     });
-    print(destinations);
-    print(searchList);
   }
 
   final Stream<QuerySnapshot> _destinationsStream = FirebaseFirestore.instance
@@ -64,7 +62,7 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
       stream: _destinationsStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return const Text('Something went wrong');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -116,7 +114,7 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
                 ),
               ),
               actions: [
-                Container(
+                SizedBox(
                   width: 150,
                   child: TextField(
                     textAlignVertical: TextAlignVertical.bottom,
@@ -133,7 +131,6 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
                       setState(() {
                         searchList = searched;
                       });
-                      print(searchList);
                     },
                   ),
                 ),
@@ -149,13 +146,13 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
             ),
             body: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: Row(
-                    children: [
+                    children: const [
                       Text(
                         "Explore",
                         style: TextStyle(fontSize: 35),
@@ -196,12 +193,12 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
                             child: Container(
                               alignment: Alignment.bottomCenter,
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                   image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: data['image_url'] == null
-                                          ? AssetImage(
+                                          ? const AssetImage(
                                                   'assets/image_unavailable.jpg')
                                               as ImageProvider
                                           : NetworkImage(data['image_url']))),
@@ -220,7 +217,7 @@ class _FestivalNewsfeedWidgetState extends State<FestivalNewsfeedWidget> {
                                       child: Text(
                                         data['name'],
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w500,
                                             color: Colors.white),

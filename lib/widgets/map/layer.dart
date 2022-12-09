@@ -33,8 +33,7 @@ class LayerState extends State {
       dragEnabled: false,
       myLocationEnabled: true,
       onMapCreated: _onMapCreated,
-      onMapClick: (point, latLong) =>
-          print(point.toString() + latLong.toString()),
+      onMapClick: (point, latLong) {},
       onStyleLoadedCallback: _onStyleLoadedCallback,
       initialCameraPosition: CameraPosition(
         target: center,

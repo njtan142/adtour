@@ -1,20 +1,13 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:android_app/widgets/configuration.dart';
-import 'package:android_app/widgets/map/mapbox_widget.dart';
 import 'package:android_app/widgets/newsfeed/cultural.dart';
-import 'package:android_app/widgets/newsfeed/destination_confirmation.dart';
 import 'package:android_app/widgets/newsfeed/manmade.dart';
 import 'package:android_app/widgets/newsfeed/special_interest.dart';
 import 'package:android_app/widgets/profile/profile_picture_view_widget.dart';
-import 'package:android_app/widgets/splash_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
@@ -37,16 +30,19 @@ class _HomeWidgetState extends State<HomeWidget> {
   Timer? timer;
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
 
-  Future<void> getLocations() async {
-    CollectionReference culturalRef = FirebaseFirestore.instance
+  final num ideadDistance = 11428016;
+  List<Map<String, dynamic>> closeLocations = [];
+
+  Future<List<LatLng>> getLocationsFromCollection(String category) async {
+    CollectionReference collectionRef = FirebaseFirestore.instance
         .collection('LocationsData')
         .doc("cultural")
         .collection("destinations");
 
-    QuerySnapshot querySnapshot = await culturalRef.get();
+    QuerySnapshot querySnapshot = await collectionRef.get();
 
     // Get data from docs and convert map to List
-    final culturalDesinations = querySnapshot.docs.map((doc) {
+    final collectionDestinations = querySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       if (mounted) {
         setState(() {
@@ -57,45 +53,14 @@ class _HomeWidgetState extends State<HomeWidget> {
           double.parse(data['latitude']), double.parse(data['longitude']));
     }).toList();
 
-    CollectionReference manmadeRef = FirebaseFirestore.instance
-        .collection('LocationsData')
-        .doc("manmade")
-        .collection("destinations");
+    return collectionDestinations;
+  }
 
-    querySnapshot = await manmadeRef.get();
-
-    // Get data from docs and convert map to List
-    final manmadeDesinations = querySnapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      if (mounted) {
-        setState(() {
-          destinationInfos.add(doc);
-        });
-      }
-      return LatLng(
-          double.parse(data['latitude']), double.parse(data['longitude']));
-    }).toList();
-
-    CollectionReference specialinterestRef = FirebaseFirestore.instance
-        .collection('LocationsData')
-        .doc("manmade")
-        .collection("destinations");
-
-    querySnapshot = await specialinterestRef.get();
-
-    // Get data from docs and convert map to List
-    final specialinterestDesinations = querySnapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      if (mounted) {
-        setState(() {
-          destinationInfos.add(doc);
-        });
-      }
-
-      return LatLng(
-          double.parse(data['latitude']), double.parse(data['longitude']));
-    }).toList();
-
+  Future<void> getLocations() async {
+    final culturalDesinations = await getLocationsFromCollection("cultural");
+    final manmadeDesinations = await getLocationsFromCollection("manmade");
+    final specialinterestDesinations =
+        await getLocationsFromCollection("specialinterest");
     final allData =
         culturalDesinations + manmadeDesinations + specialinterestDesinations;
 
@@ -114,7 +79,6 @@ class _HomeWidgetState extends State<HomeWidget> {
 
     bool serviceEnabled;
     PermissionStatus permissionGranted;
-    LocationData locationData;
 
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
@@ -132,40 +96,30 @@ class _HomeWidgetState extends State<HomeWidget> {
       }
     }
 
+    closeLocations = [];
+    LocationData locationData;
+
     locationData = await location.getLocation();
     LatLng locationPosition =
         LatLng(locationData.latitude!, locationData.longitude!);
 
-    num closestPosition = 100000000;
-    int closestPositionIndex = 0;
     destinationPositions.asMap().forEach((index, value) {
       num distance =
           SphericalUtil.computeDistanceBetween(locationPosition, value);
-
-      closestPosition = min(closestPosition, distance);
-      if (closestPosition == distance) {
-        closestPositionIndex = index;
+      if (distance <= ideadDistance) {
+        Map<String, dynamic> destinationData =
+            destinationInfos[index].data() as Map<String, dynamic>;
+        LatLng destinationPosition = destinationPositions[index];
+        closeLocations.add({
+          'location_name': destinationData['name'],
+          'distance': distance / 1000,
+          'data': destinationData,
+          'id': destinationInfos[index].id,
+          'latitude': destinationPosition.latitude,
+          'longitude': destinationPosition.longitude,
+          'comments': destinationInfos[index].reference.collection('comments')
+        });
       }
-    });
-
-    Map<String, dynamic> destinationData =
-        destinationInfos[closestPositionIndex - 1].data()
-            as Map<String, dynamic>;
-
-    LatLng destinationPosition = destinationPositions[closestPositionIndex];
-
-    setState(() {
-      closestLocation = {
-        'location_name': destinationData['name'],
-        'distance': closestPosition / 1000,
-        'data': destinationData,
-        'id': destinationInfos[closestPositionIndex - 1].id,
-        'latitude': destinationPosition.latitude,
-        'longitude': destinationPosition.longitude,
-        'comments': destinationInfos[closestPositionIndex - 1]
-            .reference
-            .collection('comments')
-      };
     });
   }
 
@@ -181,24 +135,9 @@ class _HomeWidgetState extends State<HomeWidget> {
     }
   }
 
-  @override
-  void initState() {
-    FirebaseAnalytics.instance.logLogin().then((value) {});
-    FirebaseAnalytics.instance.logScreenView(screenName: "Home");
-    FirebaseAnalytics.instance
-        .setUserId(id: FirebaseAuth.instance.currentUser?.uid);
+  Future<void> logLoginEvent() async {
     DateTime today = DateTime.now();
-    print("${today.year}-${today.month}-${today.day}");
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get()
-        .then((data) {
-      setState(() {
-        userData = data.data()!;
-      });
-      checkConfigured();
-    });
+
     FirebaseFirestore.instance
         .collection('admin')
         .doc('analytics')
@@ -243,6 +182,27 @@ class _HomeWidgetState extends State<HomeWidget> {
         });
       });
     });
+  }
+
+  void initializeUserData() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((data) {
+      setState(() {
+        if (data.exists) {
+          userData = data.data()!;
+        }
+      });
+      checkConfigured();
+    });
+  }
+
+  @override
+  void initState() {
+    initializeUserData();
+    logLoginEvent();
     getLocations();
     timer = Timer.periodic(
         const Duration(seconds: 5), (Timer t) => getUserLocation());
@@ -376,7 +336,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: categoryTextBGColor,
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                         bottomLeft: Radius.circular(10),
                                         bottomRight: Radius.circular(10))),
                                 height: 30,
@@ -410,7 +370,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: categoryTextBGColor,
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                         bottomLeft: Radius.circular(10),
                                         bottomRight: Radius.circular(10))),
                                 height: 30,
@@ -425,9 +385,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                     ],
                   ),
                 )
-                // Expanded(child: ListView.builder(itemBuilder: ((context, index) {
-
-                // }),))
               ],
             ),
           ),
@@ -435,39 +392,20 @@ class _HomeWidgetState extends State<HomeWidget> {
               bottom: 0,
               left: 0,
               child: GestureDetector(
-                onTap: () {
-                  if (closestLocation != null) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DestinationConfirmationWidget(
-                                data: closestLocation!['data'],
-                                id: closestLocation!['id'],
-                                collectionReference:
-                                    closestLocation!['comments'])));
-                  }
-                },
+                onTap: () {},
                 child: Card(
+                  color: const Color.fromARGB(255, 68, 171, 255),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 200,
+                    padding: const EdgeInsets.all(20.0),
+                    child: SizedBox(
                       child: Column(
                         children: [
-                          ...(closestLocation != null
-                              ? [
-                                  Text(
-                                    closestLocation!["location_name"],
-                                    style: TextStyle(fontSize: 20),
-                                    overflow: TextOverflow.ellipsis,
-                                  )
-                                ]
-                              : []),
-                          Text(
-                            "Closest Location${closestLocation != null ? " (${(closestLocation!["distance"] as num).toStringAsFixed(1)} km)" : ""}",
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ),
+                          Row(
+                            children: [
+                              const Text("Close Locations:"),
+                              Text(closeLocations.length.toString()),
+                            ],
+                          )
                         ],
                       ),
                     ),

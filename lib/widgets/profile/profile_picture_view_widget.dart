@@ -1,6 +1,5 @@
 import 'package:android_app/widgets/profile/profile_picture_edit_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class ProfilePictureView extends StatefulWidget {
   final String profileURL;
@@ -16,7 +15,7 @@ class _ProfilePictureViewState extends State<ProfilePictureView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
+        title: const Text("Profile"),
       ),
       body: Center(
         child: Column(
@@ -32,13 +31,13 @@ class _ProfilePictureViewState extends State<ProfilePictureView> {
                 children: [
                   Expanded(
                       child: ElevatedButton(
-                    child: Text("Edit Profile"),
+                    child: const Text("Edit Profile"),
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ProfilePictureEditWidget()));
+                                  const ProfilePictureEditWidget()));
                     },
                   ))
                 ],

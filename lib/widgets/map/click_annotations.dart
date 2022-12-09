@@ -75,7 +75,7 @@ class ClickAnnotationBodyState extends State<ClickAnnotationBody> {
 
   void _onStyleLoaded() {
     controller!.addCircle(
-      CircleOptions(
+      const CircleOptions(
         geometry: LatLng(-33.881979408447314, 151.171361438502117),
         circleStrokeColor: "#00FF00",
         circleStrokeWidth: 2,
@@ -83,7 +83,7 @@ class ClickAnnotationBodyState extends State<ClickAnnotationBody> {
       ),
     );
     controller!.addCircle(
-      CircleOptions(
+      const CircleOptions(
         geometry: LatLng(-33.894372606072309, 151.17576679759523),
         circleStrokeColor: "#00FF00",
         circleStrokeWidth: 2,
@@ -91,13 +91,13 @@ class ClickAnnotationBodyState extends State<ClickAnnotationBody> {
       ),
     );
     controller!.addSymbol(
-      SymbolOptions(
+      const SymbolOptions(
           geometry: LatLng(-33.894372606072309, 151.17576679759523),
           iconImage: "fast-food-15",
           iconSize: 2),
     );
     controller!.addLine(
-      LineOptions(
+      const LineOptions(
         geometry: [
           LatLng(-33.874867744475786, 151.170627211986584),
           LatLng(-33.881979408447314, 151.171361438502117),
@@ -111,7 +111,7 @@ class ClickAnnotationBodyState extends State<ClickAnnotationBody> {
     );
 
     controller!.addFill(
-      FillOptions(
+      const FillOptions(
         geometry: [
           [
             LatLng(-33.901517742631846, 151.178099204457737),

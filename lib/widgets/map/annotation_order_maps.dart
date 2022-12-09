@@ -6,21 +6,21 @@ import 'mapbox_widget.dart';
 import 'page.dart';
 
 class AnnotationOrderPage extends ExamplePage {
-  AnnotationOrderPage()
+  const AnnotationOrderPage()
       : super(const Icon(Icons.layers), 'Annotation order maps');
 
   @override
-  Widget build(BuildContext context) => AnnotationOrderBody();
+  Widget build(BuildContext context) => const AnnotationOrderBody();
 }
 
 class AnnotationOrderBody extends StatefulWidget {
-  AnnotationOrderBody();
+  const AnnotationOrderBody({super.key});
 
   @override
-  _AnnotationOrderBodyState createState() => _AnnotationOrderBodyState();
+  AnnotationOrderBodyState createState() => AnnotationOrderBodyState();
 }
 
-class _AnnotationOrderBodyState extends State<AnnotationOrderBody> {
+class AnnotationOrderBodyState extends State<AnnotationOrderBody> {
   late MapboxMapController controllerOne;
   late MapboxMapController controllerTwo;
 
@@ -105,11 +105,11 @@ class _AnnotationOrderBodyState extends State<AnnotationOrderBody> {
   }
 
   void onMapCreatedOne(MapboxMapController controller) {
-    this.controllerOne = controller;
+    controllerOne = controller;
   }
 
   void onMapCreatedTwo(MapboxMapController controller) {
-    this.controllerTwo = controller;
+    controllerTwo = controller;
   }
 
   void onStyleLoaded(MapboxMapController controller) {
@@ -123,7 +123,7 @@ class _AnnotationOrderBodyState extends State<AnnotationOrderBody> {
       ),
     );
     controller.addLine(
-      LineOptions(
+      const LineOptions(
         draggable: false,
         lineColor: "#ff0000",
         lineWidth: 7.0,
@@ -139,7 +139,7 @@ class _AnnotationOrderBodyState extends State<AnnotationOrderBody> {
       ),
     );
     controller.addFill(
-      FillOptions(
+      const FillOptions(
         draggable: false,
         fillColor: "#008888",
         fillOpacity: 0.3,

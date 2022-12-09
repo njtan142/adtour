@@ -19,7 +19,7 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
   Map<String, dynamic> userData = {'profile_url': null};
   final TextEditingController searchController = TextEditingController();
   List<QueryDocumentSnapshot<Object?>> destinations = [];
-  List<QueryDocumentSnapshot<Object?>>? searchList = null;
+  List<QueryDocumentSnapshot<Object?>>? searchList;
 
   @override
   void dispose() {
@@ -35,7 +35,9 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
         .get()
         .then((data) {
       setState(() {
-        userData = data.data()!;
+        if (data.exists) {
+          userData = data.data()!;
+        }
       });
     });
     super.initState();
@@ -48,8 +50,6 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
     setState(() {
       searchList = destinations;
     });
-    print(destinations);
-    print(searchList);
   }
 
   final Stream<QuerySnapshot> _destinationsStream = FirebaseFirestore.instance
@@ -64,7 +64,7 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
       stream: _destinationsStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return const Text('Something went wrong');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {

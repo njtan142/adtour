@@ -1,19 +1,12 @@
 import 'dart:async';
 
 import 'package:android_app/widgets/newsfeed/classifier.dart';
-import 'package:android_app/widgets/newsfeed/try.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../main.dart';
-import '../map/map_widget.dart';
-import '../map/mapbox_widget.dart';
 
 class DestinationConfirmationWidget extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -33,9 +26,9 @@ class DestinationConfirmationWidget extends StatefulWidget {
 
 class _DestinationConfirmationWidgetState
     extends State<DestinationConfirmationWidget> {
-  Classifier _classifier = Classifier();
+  final Classifier _classifier = Classifier();
   late Stream<QuerySnapshot> _destinationsStream;
-  Widget comments = Center(
+  Widget comments = const Center(
     child: CircularProgressIndicator(),
   );
   Timer? timer;
@@ -47,11 +40,8 @@ class _DestinationConfirmationWidgetState
   void initState() {
     FirebaseAnalytics.instance.logEvent(name: "Destination Views");
     _destinationsStream = widget.collectionReference.snapshots();
-    timer = Timer.periodic(Duration(seconds: 1), (Timer t) => checkIfLoaded());
-    // TODO: implement initState
-    print(widget.data);
-    print(widget.id);
-    print(widget.collectionReference.path);
+    timer = Timer.periodic(
+        const Duration(seconds: 1), (Timer t) => checkIfLoaded());
 
     super.initState();
   }
@@ -69,7 +59,6 @@ class _DestinationConfirmationWidgetState
 
   @override
   void dispose() {
-    // TODO: implement dispose
     commentController.dispose();
     super.dispose();
   }
@@ -89,10 +78,10 @@ class _DestinationConfirmationWidgetState
       barrierLabel: "Barrier",
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: Duration(milliseconds: 100),
+      transitionDuration: const Duration(milliseconds: 100),
       pageBuilder: (_, __, ___) {
         return Center(
-          child: Container(
+          child: SizedBox(
             height: 200,
             width: 300,
             child: Card(
@@ -100,17 +89,17 @@ class _DestinationConfirmationWidgetState
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       "Confirm Check In",
                       style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Text(
                       "Your location is near ${widget.data['name']}, do you want to check in?",
-                      style: TextStyle(fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                     Row(
                       children: [
@@ -121,7 +110,7 @@ class _DestinationConfirmationWidgetState
                             });
                             Navigator.of(context).pop();
                           },
-                          child: new Text('Yes please'),
+                          child: const Text('Yes please'),
                         ),
                         TextButton(
                           onPressed: () {
@@ -131,7 +120,7 @@ class _DestinationConfirmationWidgetState
                                     builder: (context) =>
                                         const MyHomePage(title: 'Adtour')));
                           },
-                          child: new Text('No, go back'),
+                          child: const Text('No, go back'),
                         ),
                       ],
                     )
@@ -145,9 +134,9 @@ class _DestinationConfirmationWidgetState
       transitionBuilder: (_, anim, __, child) {
         Tween<Offset> tween;
         if (anim.status == AnimationStatus.reverse) {
-          tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
         } else {
-          tween = Tween(begin: Offset(1, 0), end: Offset.zero);
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
         }
 
         return SlideTransition(
@@ -185,25 +174,25 @@ class _DestinationConfirmationWidgetState
                   children: <Widget>[
                     Row(
                       children: [
-                        Container(
+                        SizedBox(
                           width: 30,
                           height: 30,
                           child: userData['profile_url'] == null
-                              ? CircleAvatar(
+                              ? const CircleAvatar(
                                   backgroundImage: AssetImage(
                                       'assets/image_unavailable.jpg'))
                               : CircleAvatar(
                                   backgroundImage:
                                       NetworkImage(userData['profile_url'])),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 15,
                         ),
                         Text(
                           userData['first_name'],
-                          style: TextStyle(color: Colors.blue),
+                          style: const TextStyle(color: Colors.blue),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 30,
                         ),
                         Text(
@@ -211,11 +200,12 @@ class _DestinationConfirmationWidgetState
                               .toDate()
                               .toString()
                               .split(" ")[0],
-                          style: TextStyle(fontSize: 12, color: Colors.black26),
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.black26),
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
@@ -264,7 +254,7 @@ class _DestinationConfirmationWidgetState
       barrierLabel: "Barrier",
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: Duration(milliseconds: 100),
+      transitionDuration: const Duration(milliseconds: 100),
       pageBuilder: (_, __, ___) {
         return Center(
           child: SizedBox(
@@ -478,7 +468,7 @@ class _DestinationConfirmationWidgetState
                               onPressed: () {
                                 uploadComment();
                               },
-                              child: Text("Submit"))
+                              child: const Text("Submit"))
                         ])
                 ],
               ),
