@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../profile/profile_picture_view_widget.dart';
+import '../widget_builder.dart';
 
 class SpecialInterestNewsfeedWidget extends StatefulWidget {
   const SpecialInterestNewsfeedWidget({Key? key}) : super(key: key);
@@ -87,34 +88,7 @@ class _SpecialInterestNewsfeedWidgetState
               elevation: 0,
               toolbarHeight: 80,
               systemOverlayStyle: SystemUiOverlayStyle.light,
-              title: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePictureView(
-                            profileURL: userData['profile_url'] ??
-                                "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"),
-                      ));
-                },
-                child: CircleAvatar(
-                  child: ClipOval(
-                    child: userData['profile_url'] == null
-                        ? Image.network(
-                            width: 50,
-                            height: 50,
-                            "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
-                            fit: BoxFit.cover,
-                          )
-                        : Image.network(
-                            userData['profile_url'],
-                            fit: BoxFit.cover,
-                            width: 50,
-                            height: 50,
-                          ),
-                  ),
-                ),
-              ),
+              title: displayProfile(context, userData),
               actions: [
                 SizedBox(
                   width: 150,
@@ -163,73 +137,22 @@ class _SpecialInterestNewsfeedWidgetState
                   ),
                 ),
                 Expanded(
-                    child: GridView.builder(
-                        padding:
-                            const EdgeInsets.only(left: 20, top: 50, right: 20),
-                        itemCount: searchList == null ? 0 : searchList!.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: (2 / 3),
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                        ),
-                        itemBuilder: (context, index) {
-                          Map<String, dynamic> data = searchList![index].data()!
-                              as Map<String, dynamic>;
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DestinationInfoWidget(
-                                            data: data,
-                                            id: searchList![index].id,
-                                            collectionReference:
-                                                searchList![index]
-                                                    .reference
-                                                    .collection('comments'),
-                                          )));
-                            },
-                            child: Container(
-                              alignment: Alignment.bottomCenter,
-                              decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10)),
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: data['image_url'] == null
-                                          ? const AssetImage(
-                                                  'assets/image_unavailable.jpg')
-                                              as ImageProvider
-                                          : NetworkImage(data['image_url']))),
-                              child: FractionallySizedBox(
-                                widthFactor: 1,
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        color: destinationCardTextBGColor,
-                                        borderRadius: const BorderRadius.only(
-                                            bottomLeft: Radius.circular(10),
-                                            bottomRight: Radius.circular(10))),
-                                    height: 75,
-                                    alignment: Alignment.center,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        data['name'],
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w500,
-                                            color: destinationCardTextColor),
-                                        overflow: TextOverflow.clip,
-                                      ),
-                                    )),
-                              ),
-                            ),
-                          );
-                        }))
+                  child: GridView.builder(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 50, right: 20),
+                    itemCount: searchList == null ? 0 : searchList!.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: (2 / 3),
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemBuilder: (context, index) {
+                      return createDestinationCard(context, searchList, index);
+                    },
+                  ),
+                ),
               ],
             ),
           );
