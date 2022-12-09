@@ -1,11 +1,9 @@
 import 'package:android_app/custom_arts.dart';
-import 'package:android_app/widgets/newsfeed/destination_info_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../profile/profile_picture_view_widget.dart';
 import '../widget_builder.dart';
 
 class ManMadeNewsfeedWidget extends StatefulWidget {
@@ -90,7 +88,7 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
               systemOverlayStyle: SystemUiOverlayStyle.light,
               title: displayProfile(context, userData),
               actions: [
-                Container(
+                SizedBox(
                   width: 150,
                   child: TextField(
                     textAlignVertical: TextAlignVertical.bottom,
@@ -107,7 +105,6 @@ class _ManMadeNewsfeedWidgetState extends State<ManMadeNewsfeedWidget> {
                       setState(() {
                         searchList = searched;
                       });
-                      print(searchList);
                     },
                   ),
                 ),

@@ -3,7 +3,6 @@ import 'package:android_app/widgets/configuration.dart';
 import 'package:android_app/widgets/newsfeed/cultural.dart';
 import 'package:android_app/widgets/newsfeed/manmade.dart';
 import 'package:android_app/widgets/newsfeed/special_interest.dart';
-import 'package:android_app/widgets/profile/profile_picture_view_widget.dart';
 import 'package:android_app/widgets/widget_builder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

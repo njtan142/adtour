@@ -81,9 +81,9 @@ Widget createDestinationCard(BuildContext context,
           MaterialPageRoute(
               builder: (context) => DestinationInfoWidget(
                     data: data,
-                    id: searchList![index].id,
+                    id: searchList[index].id,
                     collectionReference:
-                        searchList![index].reference.collection('comments'),
+                        searchList[index].reference.collection('comments'),
                   )));
     },
     child: Container(
