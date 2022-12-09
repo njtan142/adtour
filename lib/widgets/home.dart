@@ -4,6 +4,7 @@ import 'package:android_app/widgets/newsfeed/cultural.dart';
 import 'package:android_app/widgets/newsfeed/manmade.dart';
 import 'package:android_app/widgets/newsfeed/special_interest.dart';
 import 'package:android_app/widgets/profile/profile_picture_view_widget.dart';
+import 'package:android_app/widgets/widget_builder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -223,34 +224,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         elevation: 0,
         toolbarHeight: 80,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        title: GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfilePictureView(
-                      profileURL: userData['profile_url'] ??
-                          "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"),
-                ));
-          },
-          child: CircleAvatar(
-            child: ClipOval(
-              child: userData['profile_url'] == null
-                  ? Image.network(
-                      width: 100,
-                      height: 100,
-                      "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg",
-                      fit: BoxFit.cover,
-                    )
-                  : Image.network(
-                      userData['profile_url'],
-                      fit: BoxFit.cover,
-                      width: 100,
-                      height: 100,
-                    ),
-            ),
-          ),
-        ),
+        title: displayProfile(context, userData),
         actions: [
           IconButton(
             onPressed: signOut,
@@ -280,108 +254,14 @@ class _HomeWidgetState extends State<HomeWidget> {
                     mainAxisSpacing: 10,
                     crossAxisCount: 2,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CulturalNewsfeedWidget()));
-                        },
-                        child: Container(
-                          alignment: Alignment.bottomCenter,
-                          decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                      'assets/cultural_background.jpg'))),
-                          child: FractionallySizedBox(
-                            widthFactor: 1,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: categoryTextBGColor,
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(10),
-                                        bottomRight: Radius.circular(10))),
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Cultural",
-                                  style: TextStyle(fontSize: 17),
-                                )),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ManMadeNewsfeedWidget()));
-                        },
-                        child: Container(
-                          alignment: Alignment.bottomCenter,
-                          decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                      'assets/manmade_background.jpg'))),
-                          child: FractionallySizedBox(
-                            widthFactor: 1,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: categoryTextBGColor,
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(10),
-                                        bottomRight: Radius.circular(10))),
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Man Made",
-                                  style: TextStyle(fontSize: 17),
-                                )),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SpecialInterestNewsfeedWidget()));
-                        },
-                        child: Container(
-                          alignment: Alignment.bottomCenter,
-                          decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                      'assets/manmade_background.jpg'))),
-                          child: FractionallySizedBox(
-                            widthFactor: 1,
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: categoryTextBGColor,
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(10),
-                                        bottomRight: Radius.circular(10))),
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Special Interest",
-                                  style: TextStyle(fontSize: 17),
-                                )),
-                          ),
-                        ),
-                      ),
+                      createCategoryCard(
+                          context, const CulturalNewsfeedWidget(), "Cultural"),
+                      createCategoryCard(
+                          context, const ManMadeNewsfeedWidget(), "Manmade"),
+                      createCategoryCard(
+                          context,
+                          const SpecialInterestNewsfeedWidget(),
+                          "Special Interest"),
                     ],
                   ),
                 )
