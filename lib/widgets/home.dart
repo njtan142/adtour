@@ -1,9 +1,5 @@
 import 'dart:async';
-import 'package:android_app/widgets/configuration.dart';
-import 'package:android_app/widgets/newsfeed/cultural.dart';
-import 'package:android_app/widgets/newsfeed/manmade.dart';
-import 'package:android_app/widgets/newsfeed/special_interest.dart';
-import 'package:android_app/widgets/widget_builder.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +8,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:maps_toolkit/maps_toolkit.dart';
-import 'package:android_app/custom_arts.dart';
+
+import '../custom_arts.dart';
+import 'configuration.dart';
+import 'newsfeed/cultural.dart';
+import 'newsfeed/destination_confirmation.dart';
+import 'newsfeed/manmade.dart';
+import 'newsfeed/special_interest.dart';
+import 'widget_builder.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({Key? key}) : super(key: key);
@@ -30,13 +33,13 @@ class _HomeWidgetState extends State<HomeWidget> {
   Timer? timer;
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
 
-  final num ideadDistance = 11428016;
+  final num ideadDistance = 114280160;
   List<Map<String, dynamic>> closeLocations = [];
 
   Future<List<LatLng>> getLocationsFromCollection(String category) async {
     CollectionReference collectionRef = FirebaseFirestore.instance
         .collection('LocationsData')
-        .doc("cultural")
+        .doc(category)
         .collection("destinations");
 
     QuerySnapshot querySnapshot = await collectionRef.get();
@@ -96,7 +99,8 @@ class _HomeWidgetState extends State<HomeWidget> {
       }
     }
 
-    closeLocations = [];
+    List<Map<String, dynamic>> newcloseLocations = [];
+
     LocationData locationData;
 
     locationData = await location.getLocation();
@@ -110,7 +114,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         Map<String, dynamic> destinationData =
             destinationInfos[index].data() as Map<String, dynamic>;
         LatLng destinationPosition = destinationPositions[index];
-        closeLocations.add({
+        newcloseLocations.add({
           'location_name': destinationData['name'],
           'distance': distance / 1000,
           'data': destinationData,
@@ -120,6 +124,10 @@ class _HomeWidgetState extends State<HomeWidget> {
           'comments': destinationInfos[index].reference.collection('comments')
         });
       }
+    });
+
+    setState(() {
+      closeLocations = newcloseLocations;
     });
   }
 
@@ -214,6 +222,43 @@ class _HomeWidgetState extends State<HomeWidget> {
     FirebaseAuth.instance.signOut();
   }
 
+  Future openDialog() async {
+    print(closeLocations.length);
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Nearest Tourism Destinations"),
+        content: Container(
+          height: 500,
+          width: 300,
+          child: ListView.builder(
+            itemCount: closeLocations.length,
+            itemBuilder: (BuildContext context, index) {
+              Map<String, dynamic> closeLocation = closeLocations[index];
+              return ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DestinationConfirmationWidget(
+                        data: closeLocation["data"],
+                        id: closeLocation["id"],
+                        collectionReference: closeLocation["comments"],
+                      ),
+                    ),
+                  );
+                },
+                title: Text(closeLocation["location_name"]),
+                trailing:
+                    Text(closeLocation["distance"].toString().split(".")[0]),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -271,7 +316,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               bottom: 0,
               left: 0,
               child: GestureDetector(
-                onTap: () {},
+                onTap: openDialog,
                 child: Card(
                   color: const Color.fromARGB(255, 68, 171, 255),
                   child: Padding(
@@ -281,7 +326,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         children: [
                           Row(
                             children: [
-                              const Text("Close Locations:"),
+                              const Text("Nearest Tourism Destinations:"),
                               Text(closeLocations.length.toString()),
                             ],
                           )
